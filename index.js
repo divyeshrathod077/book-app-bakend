@@ -8,10 +8,20 @@ require('dotenv').config()
 
 // middleware
 app.use(express.json());
+
+// CORS configuration - allow frontend origin
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://book-app-frontend-idt4.vercel.app',
+    process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-    origin: [process.env.FRONTEND_URL || 'http://localhost:5173'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
 // routes
