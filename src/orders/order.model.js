@@ -32,7 +32,16 @@ const orderSchema = new mongoose.Schema({
     totalPrice: {
         type: Number,
         required: true,
-    }
+    },
+    paymentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+    },
+    status: {
+      type: String,
+      default: "confirmed",
+    },
+     
 }, {
     timestamps: true,
 })
