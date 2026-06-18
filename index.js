@@ -1,51 +1,55 @@
 const express = require("express");
-const app = express();
 const cors = require("cors");
-
-
 const mongoose = require("mongoose");
-const port = process.env.PORT || 3000;
-require('dotenv').config()
+require("dotenv").config();
 
-// middleware
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Middleware
 app.use(express.json());
 
-// CORS configuration - allow frontend origin
-const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://book-app-frontend-idt4.vercel.app',
-    process.env.FRONTEND_URL
-].filter(Boolean);
-
-app.use(cors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "https://book-app-frontend-idt4.vercel.app",
+    ],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
-}))
+  })
+);
 
-// routes
-const bookRoutes = require('./src/books/book.route');
-const orderRoutes = require("./src/orders/order.route")
-const userRoutes =  require("./src/users/user.route")
-const adminRoutes = require("./src/stats/admin.stats")
+// Test Route
+app.get("/", (req, res) => {
+  res.send("Backend is running...");
+});
+
+// Routes
+const bookRoutes = require("./src/books/book.route");
+const orderRoutes = require("./src/orders/order.route");
+const userRoutes = require("./src/users/user.route");
+const adminRoutes = require("./src/stats/admin.stats");
 const paymentRoutes = require("./src/payment/payment.routes");
 
-app.use("/api/books", bookRoutes)
-app.use("/api/orders", orderRoutes)
-app.use("/api/auth", userRoutes)
-app.use("/api/admin", adminRoutes)
-app.use("/api/payment",paymentRoutes);
+app.use("/api/books", bookRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/auth", userRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/payment", paymentRoutes);
 
-main().catch(err => console.log("mongo db not connect"));
-
+// MongoDB Connection
 async function main() {
-  await mongoose.connect(process.env.DB_URL);
+  try {
+    await mongoose.connect(process.env.DB_URL);
+    console.log("MongoDB Connected Successfully");
 
-console.log("Mongodb connected sucessfully ")
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
+  } catch (err) {
+    console.error("MongoDB Connection Error:", err);
+  }
 }
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+main();
